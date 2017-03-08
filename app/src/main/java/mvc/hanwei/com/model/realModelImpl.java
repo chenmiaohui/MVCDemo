@@ -1,5 +1,7 @@
 package mvc.hanwei.com.model;
 
+import android.content.Context;
+
 import com.google.gson.Gson;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.FormEncodingBuilder;
@@ -18,6 +20,7 @@ import mvc.hanwei.com.entity.realBean;
 public class realModelImpl implements realModel{
 
     private OkHttpClient client = new OkHttpClient();
+    private Context mcontext;
     @Override
     public void getReal(final onRealModel onRealModel) {
 
@@ -25,6 +28,7 @@ public class realModelImpl implements realModel{
             @Override
             public void run() {
                 super.run();
+                // TODO OKhttp请求网络  换成  volley请求网络
                 FormEncodingBuilder builder = new FormEncodingBuilder();
                 builder.add("areaId","C157");
                 Request request = new Request.Builder()
@@ -34,19 +38,41 @@ public class realModelImpl implements realModel{
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(Request request, IOException e) {
-                        onRealModel.OnError("登陆失败...");
+                        onRealModel.OnError("网络请求异常...");
                     }
 
                     @Override
                     public void onResponse(Response response) throws IOException {
-
                         String result = response.body().string();
                         Gson gson = new Gson();
                         realBean realBean = gson.fromJson(result, realBean.class);
+                        if (realBean!=null){
+                            onRealModel.OnSuccess(realBean);
+                        }else{
+                            onRealModel.OnError("解析服务器出错...");
+                        }
 //                        Log.e("eee","-----"+response.body().string());
-                        onRealModel.OnSuccess(realBean);
+
                     }
                 });
+
+//                Map<String,String> params = new HashMap<String, String>();
+//                params.put("areaId","C157");
+//                VolleyRequest.newInstance().newGsonRequest("http://env.scsoft.com.cn:8023/dam/s/login/app/getRealtimeAreaPointInfo?format=json"
+//                ,realBean.class, new Response.Listener<realBean>() {
+//                            @Override
+//                            public void onResponse(realBean response) {
+//
+//                                Log.e("---------",response.getData().getAreaObj().getAQI()+"=====================");
+//
+//                            }
+//                        }, new Response.ErrorListener() {
+//                            @Override
+//                            public void onErrorResponse(VolleyError error) {
+//
+//                            }
+//                        });
+
             }
         }.start();
     }
