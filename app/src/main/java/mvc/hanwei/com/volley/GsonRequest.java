@@ -37,6 +37,7 @@ public class GsonRequest<T> extends Request<T> {
         super(method, url, errorListener);
         mTypeToken = typeToken;
         mListener = listener;
+
     }
 
     public GsonRequest(String url, Class<T> clazz, Listener<T> listener, ErrorListener errorListener) {
